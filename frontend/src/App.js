@@ -23,6 +23,8 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+import './theme/css/style.css';
+
 setupIonicReact();
 
 const App=() => (
