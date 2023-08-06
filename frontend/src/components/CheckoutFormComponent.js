@@ -1,8 +1,8 @@
+import React,{ useState } from "react";
 import { PaymentElement } from "@stripe/react-stripe-js";
-import { useState } from "react";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 
-export default function CheckoutFormComponent({totalMonths}) {
+export default function CheckoutFormComponent() {
     const stripe = useStripe();
     const elements = useElements();
 

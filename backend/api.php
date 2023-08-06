@@ -1,9 +1,6 @@
 <?php
 require_once 'stripe-php/init.php';
 
-$stripeSecretKey = "sk_test_51ME77cSIFtW1VSPuJqLQWVmK1vmdptG6j457wJlQv98NeRnB2eAdwkbQYWwlNfVIrtuRbNFPZsbKyafCQwdZuT1300SgcSS7AB";
-\Stripe\Stripe::setApiKey($stripeSecretKey);
-
 // Set appropriate headers for CORS (Cross-Origin Resource Sharing)
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
@@ -128,29 +125,25 @@ function getStripeIntend($id) {
     $stmt->bindParam(":token", $token);
 
     if ($stmt->execute()) {
-        $sql = "select price FROM product WHERE id = :id";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(":id", $id);
+        $sql = "select * FROM product WHERE id = ".$id;
+        $stmt = $pdo->query($sql);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
         try {
-            // Create a PaymentIntent to charge the customer
-            $paymentIntent = \Stripe\PaymentIntent::create([
-                'automatic_payment_methods' => ["enabled" =>true],
-                'amount' => $product['price'], // Replace with the actual amount to charge (in cents)
-                'currency' => 'usd', // Replace with the desired currency code
-                'confirmation_method' => 'manual', // Adjust based on your requirements
-                'confirm' => true,
+            $stripe = new \Stripe\StripeClient('sk_test_51ME77cSIFtW1VSPuJqLQWVmK1vmdptG6j457wJlQv98NeRnB2eAdwkbQYWwlNfVIrtuRbNFPZsbKyafCQwdZuT1300SgcSS7AB');
+            $paymentIntent = $stripe->paymentIntents->create([
+                'amount' => $product['price'],
+                'currency' => 'usd',
+                'payment_method_types' => ['card'],
             ]);
-
             // Return the client secret to the frontend
             sendResponse(200, ["clientSecret" => $paymentIntent->client_secret]);
         } catch (\Stripe\Exception\ApiErrorException $e) {
             // Handle Stripe API errors
-            sendResponse(500, ["error" => "Failed to delete user"]);
+            sendResponse(500, ["error" => "Failed to load intent strip" ,"message" => $e]);
         }
     } else {
-        sendResponse(500, ["error" => "Failed to delete user"]);
+        sendResponse(500, ["error" => "Failed to load intent strip"]);
     }
 }
 

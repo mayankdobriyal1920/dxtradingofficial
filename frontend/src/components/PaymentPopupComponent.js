@@ -1,61 +1,36 @@
 import React, {useEffect, useState} from "react";
-import {useDispatch} from "react-redux";
 import {Elements} from '@stripe/react-stripe-js';
 import CheckoutFormComponent from "./CheckoutFormComponent";
-
-// Make sure to call `loadStripe` outside of a component’s render to avoid
-// recreating the `Stripe` object on every render.
-
-export default function PaymentPopupComponent({amountToPay}){
-    const dispatch = useDispatch();
-
-    const [stripePromise, setStripePromise] = useState(null);
+import { loadStripe } from "@stripe/stripe-js";
+const stripePromise = loadStripe('pk_test_51ME77cSIFtW1VSPuewmIrcC2SSgHZi0ad2OuqicbcRiVpBRkRyVByCFEaIyb067eFhQL0GXaWVakkkZt5TuLFo6J005HlqBOck');
+export default function PaymentPopupComponent({id}){
     const [clientSecret, setClientSecret] = useState("");
 
     useEffect(() => {
-        const actionToConfigStripeSetup = async ()=>{
-            try {
-                const response = await fetch('https://api.dxofficialtrading.com', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        endpoint: 'publishkey',
-                    }),
-                });
-                const data = await response.json();
-                if(data?.publishableKey){
-                    setStripePromise(data?.publishableKey);
+        if(id) {
+            const actionToCreatePaymentIntend = async () => {
+                try {
+                    const response = await fetch('https://api.dxofficialtrading.com', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            id,
+                            endpoint: 'getintend',
+                        }),
+                    });
+                    const data = await response.json();
+                    if (data?.clientSecret) {
+                        setClientSecret(data?.clientSecret);
+                    }
+                } catch (error) {
+                    console.error('Error fetching users:', error);
                 }
-            } catch (error) {
-                console.error('Error fetching users:', error);
             }
+            actionToCreatePaymentIntend();
         }
-
-        const actionToCreatePaymentIntend = async ()=>{
-            try {
-                const response = await fetch('https://api.dxofficialtrading.com', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        endpoint: 'getintend',
-                    }),
-                });
-                const data = await response.json();
-                if(data?.clientSecret){
-                    setClientSecret(data?.clientSecret);
-                }
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
-        }
-
-        actionToConfigStripeSetup();
-        actionToCreatePaymentIntend();
-    }, []);
+    }, [id]);
 
     return (
         <>
