@@ -10,7 +10,16 @@ body {
   line-height: 1.5!important;
   text-align: left!important;
 }
-
+.error_login{
+  color: red;
+}
+a{
+  cursor: pointer;
+}
+.modal-backdrop{
+  display: none;
+  z-index: 0!important;
+}
 .layout_padding {
   padding: 90px 0;
 }

@@ -24,22 +24,53 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 
 import './theme/css/style.css';
+import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
+import {isLoginUser} from "./middleware/auth";
 
 setupIonicReact();
 
-const App=() => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route exact path="/home">
-          <Home />
-        </Route>
-        <Route exact path="/">
-          <Redirect to="/home" />
-        </Route>
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
-);
+const App=() => {
+  const DashboardEntryPage = ()=>{
+    const PrivateRoutes = ()=>{
+        return (
+            <IonRouterOutlet>
+              <Route path="/dashboard/home"  component={DashboardPage} />
+              <Redirect exact from="/dashboard" to="/dashboard/home" />
+            </IonRouterOutlet>
+        )
+    };
+
+    const PublicRoutes = ()=> {
+        return (
+            <IonRouterOutlet>
+                <Route path="/dashboard/login" component={LoginPage}/>
+                <Redirect exact from="/dashboard" to="/dashboard/login"/>
+            </IonRouterOutlet>
+        );
+    }
+    return (
+       <>
+           {(isLoginUser()) ?
+               <PrivateRoutes/>
+               :
+               <PublicRoutes/>
+           }
+       </>
+    )
+  }
+  return (
+    <IonApp>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <Route path="/home" exact={true} component={Home} />
+          <Route path="/dashboard" component={DashboardEntryPage} />
+          <Redirect exact from="/" to="/home" />
+          <Route render={() => <Redirect to="/home" />} />
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </IonApp>
+  )
+};
 
 export default App;

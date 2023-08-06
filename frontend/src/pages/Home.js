@@ -1,11 +1,27 @@
-import React from 'react';
-import {IonContent, IonPage} from '@ionic/react';
+import React, {useEffect, useState} from 'react';
+import {IonContent} from '@ionic/react';
 import mainFrontPic from '../theme/images/hero-bg.jpg';
-import trading1 from '../theme/images/trading1.png';
-import trading2 from '../theme/images/trading2.png';
-import trading3 from '../theme/images/trading3.png';
 import aboutImg from '../theme/images/about-img.png';
+import { Link } from 'react-router-dom';
 const Home = () => {
+
+    const [productsData,setProductsData] = useState([]);
+
+    useEffect(()=>{
+        const getProducts = async () => {
+            try {
+                const response = await fetch('https://api.dxofficialtrading.com', {
+                    method: 'GET',
+                });
+                const data = await response.json();
+                setProductsData(data);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
+        getProducts();
+    },[])
+
     return (
         <IonContent>
             <div className="hero_area">
@@ -15,10 +31,10 @@ const Home = () => {
                 <header className="header_section">
                     <div className="container">
                         <nav className="navbar navbar-expand-lg custom_nav-container ">
-                            <a className="navbar-brand" href="index.html">
-                            <span>
-                              Dx trading
-                            </span>
+                            <a className="navbar-brand">
+                                <span>
+                                  Dx official
+                                </span>
                             </a>
                             <button className="navbar-toggler" type="button" data-toggle="collapse"
                                     data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -42,9 +58,9 @@ const Home = () => {
                                     </li>
                                 </ul>
                                 <div className="user_option">
-                                    <a href="" className="order_online">
+                                    <Link to={"/dashboard"} className="order_online">
                                         Upload
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         </nav>
@@ -137,78 +153,31 @@ const Home = () => {
 
                     <div className="filters-content">
                         <div className="row grid">
-                            <div className="col-sm-6 col-lg-4 all pizza">
-                                <div className="box">
-                                    <div>
-                                        <div className="img-box">
-                                            <img src={trading1} alt=""/>
-                                        </div>
-                                        <div className="detail-box">
-                                            <h5>
-                                                Trading signal 1
-                                            </h5>
-                                            <p>
-                                                Veniam debitis quaerat officiis quasi cupiditate quo, quisquam velit, magnam
-                                                voluptatem repellendus sed eaque
-                                            </p>
-                                            <div className="options">
-                                                <h6>
-                                                    $20
-                                                </h6>
-                                                <a>Buy</a>
+                            {(productsData?.map((product)=>(
+                                <div key={product?.id} className="col-sm-6 col-lg-4 all burger">
+                                    <div className="box">
+                                        <div>
+                                            <div className="img-box">
+                                                <iframe src={product?.url}/>
+                                            </div>
+                                            <div className="detail-box">
+                                                <h5>
+                                                    {product?.name}
+                                                </h5>
+                                                <p>
+                                                    {product?.description}
+                                                </p>
+                                                <div className="options">
+                                                    <h6>
+                                                        ${product?.price}
+                                                    </h6>
+                                                    <a>Buy</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="col-sm-6 col-lg-4 all burger">
-                                <div className="box">
-                                    <div>
-                                        <div className="img-box">
-                                            <img src={trading2} alt=""/>
-                                        </div>
-                                        <div className="detail-box">
-                                            <h5>
-                                                Trading signal 2
-                                            </h5>
-                                            <p>
-                                                Veniam debitis quaerat officiis quasi cupiditate quo, quisquam velit, magnam
-                                                voluptatem repellendus sed eaque
-                                            </p>
-                                            <div className="options">
-                                                <h6>
-                                                    $15
-                                                </h6>
-                                                <a>Buy</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-sm-6 col-lg-4 all pizza">
-                                <div className="box">
-                                    <div>
-                                        <div className="img-box">
-                                            <img src={trading3} alt=""/>
-                                        </div>
-                                        <div className="detail-box">
-                                            <h5>
-                                                Trading signal 3
-                                            </h5>
-                                            <p>
-                                                Veniam debitis quaerat officiis quasi cupiditate quo, quisquam velit, magnam
-                                                voluptatem repellendus sed eaque
-                                            </p>
-                                            <div className="options">
-                                                <h6>
-                                                    $17
-                                                </h6>
-                                                <a>Buy</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            )))}
                         </div>
                     </div>
                 </div>
@@ -225,7 +194,7 @@ const Home = () => {
                             <div className="detail-box">
                                 <div className="heading_container">
                                     <h2>
-                                        We Are Dx Trading Official
+                                        We Are Dx Official Trading
                                     </h2>
                                 </div>
                                 <p>
@@ -276,27 +245,24 @@ const Home = () => {
                         <div className="col-md-4 footer-col">
                             <div className="footer_detail">
                                 <a href="" className="footer-logo">
-                                    Dx Trading
+                                    Dx Official
                                 </a>
                                 <p>
                                     Necessary, making this the first true generator on the Internet. It uses a
                                     dictionary of over 200 Latin words, combined with
                                 </p>
                                 <div className="footer_social">
+                                    <a target={"_blank"} rel="noreferrer" href="https://www.instagram.com/dxofficial_ff">
+                                        <i className="fa fa-instagram" aria-hidden="true"></i>
+                                    </a>
+                                    <a target={"_blank"} rel="noreferrer" href="https://www.youtube.com/@dx-officialtrading9079">
+                                        <i className="fa fa-youtube" aria-hidden="true"></i>
+                                    </a>
                                     <a href="">
                                         <i className="fa fa-facebook" aria-hidden="true"></i>
                                     </a>
                                     <a href="">
                                         <i className="fa fa-twitter" aria-hidden="true"></i>
-                                    </a>
-                                    <a href="">
-                                        <i className="fa fa-linkedin" aria-hidden="true"></i>
-                                    </a>
-                                    <a href="">
-                                        <i className="fa fa-instagram" aria-hidden="true"></i>
-                                    </a>
-                                    <a href="">
-                                        <i className="fa fa-pinterest" aria-hidden="true"></i>
                                     </a>
                                 </div>
                             </div>
@@ -316,8 +282,7 @@ const Home = () => {
                     <div className="footer-info">
                         <p>
                             &copy; <span id="displayYear"></span> All Rights Reserved By
-                            <a> Dxtradingofficial</a><br/><br/>
-                            &copy; <span id="displayYear"></span>
+                            <a> Dx official</a>
                         </p>
                     </div>
                 </div>
