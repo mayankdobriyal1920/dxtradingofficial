@@ -1,52 +1,69 @@
-import { useState } from "react";
-import { PaymentElement,useStripe, useElements } from "@stripe/react-stripe-js";
+import React, {useEffect, useState} from "react";
+import {useDispatch} from "react-redux";
+import {Elements} from '@stripe/react-stripe-js';
+import CheckoutFormComponent from "./CheckoutFormComponent";
 
-export default function PaymentPopupComponent({totalPrice}) {
-    const stripe = useStripe();
-    const elements = useElements();
+// Make sure to call `loadStripe` outside of a component’s render to avoid
+// recreating the `Stripe` object on every render.
 
-    const [message, setMessage] = useState(null);
-    const [isProcessing, setIsProcessing] = useState(false);
+export default function PaymentPopupComponent({amountToPay}){
+    const dispatch = useDispatch();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const [stripePromise, setStripePromise] = useState(null);
+    const [clientSecret, setClientSecret] = useState("");
 
-        if (!stripe || !elements) {
-            // Stripe.js has not yet loaded.
-            // Make sure to disable form submission until Stripe.js has loaded.
-            return;
+    useEffect(() => {
+        const actionToConfigStripeSetup = async ()=>{
+            try {
+                const response = await fetch('https://api.dxofficialtrading.com', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        endpoint: 'publishkey',
+                    }),
+                });
+                const data = await response.json();
+                if(data?.publishableKey){
+                    setStripePromise(data?.publishableKey);
+                }
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
         }
 
-        setIsProcessing(true);
-
-        const { error } = await stripe.confirmPayment({
-            elements,
-            confirmParams: {
-                // Make sure to change this to your payment completion page
-                return_url: `${window.location.origin}/dashboard/subscription-confirm/${totalPrice}`,
-            },
-        });
-
-        if (error.type === "card_error" || error.type === "validation_error") {
-            setMessage(error.message);
-        } else {
-            setMessage("An unexpected error occured.");
+        const actionToCreatePaymentIntend = async ()=>{
+            try {
+                const response = await fetch('https://api.dxofficialtrading.com', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        endpoint: 'getintend',
+                    }),
+                });
+                const data = await response.json();
+                if(data?.clientSecret){
+                    setClientSecret(data?.clientSecret);
+                }
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
         }
 
-        setIsProcessing(false);
-    };
+        actionToConfigStripeSetup();
+        actionToCreatePaymentIntend();
+    }, []);
 
     return (
-        <form id="payment-form" onSubmit={handleSubmit}>
-            <PaymentElement id="payment-element" />
-            <button disabled={isProcessing || !stripe || !elements} id="submit" style={{width:'100%'}}
-                    className={"theme_btn pay_button mt-15"}>
-                <span id="button-text">
-                  {isProcessing ? "Processing ... " : "Pay now"}
-                </span>
-            </button>
-            {/* Show any error or success messages */}
-            {message && <div id="payment-message">{message}</div>}
-        </form>
-    );
+        <>
+            {clientSecret && stripePromise && (
+                <Elements stripe={stripePromise} options={{ clientSecret }}>
+                    <CheckoutFormComponent/>
+                </Elements>
+            )}
+        </>
+    )
 }

@@ -171,7 +171,7 @@ const Home = () => {
                                                     <h6>
                                                         ${product?.price}
                                                     </h6>
-                                                    <a>Buy</a>
+                                                    <a><i className={"fa fa-cart-plus"}/> </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -287,6 +287,75 @@ const Home = () => {
                     </div>
                 </div>
             </footer>
+            {/*///////////// BUY PRODUCT MODAL ///////////////////*/}
+            <div className="modal fade" id="add_product_modal" tabIndex="-1" aria-hidden="true">
+                <div style={{display:'block'}} className="modal-backdrop fade show"></div>
+                <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Add product</h5>
+                            <button type="button" className="btn-close" onClick={()=>resetProductForm()} data-dismiss="modal" aria-label="Close">
+                                <i className={"fa fa-times"}/>
+                            </button>
+                        </div>
+                        <form onSubmit={addProductDetail}>
+                            <div className="modal-body">
+                                <section className="book_section">
+                                    <div className="container">
+                                        <div className="form_container">
+                                            <div>
+                                                <input type="name"
+                                                       className="form-control"
+                                                       placeholder={"Enter product name"}
+                                                       value={name}
+                                                       onChange={(e)=>setName(e.target.value)}/>
+                                            </div>
+                                            <div>
+                                                <input type="text"
+                                                       className="form-control"
+                                                       placeholder={"Enter product youtube url"}
+                                                       value={url}
+                                                       onChange={(e)=>setUrl(e.target.value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                    <textarea
+                                                        cols={2}
+                                                        className="form-control"
+                                                        placeholder={"Enter product description"}
+                                                        value={description}
+                                                        onChange={(e)=>setDescription(e.target.value)}
+                                                    />
+                                            </div>
+                                            <div>
+                                                <input type="number"
+                                                       className="form-control"
+                                                       min={0}
+                                                       placeholder={"Enter product price"}
+                                                       value={price}
+                                                       onChange={(e)=>setPrice(Number(e.target.value))}
+                                                />
+                                            </div>
+                                            <div>
+                                                <input type="file"
+                                                       className="form-control"
+                                                       placeholder={"Select product file price"}
+                                                       onChange={(e)=>handleFileChange(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" id={"close_add_product_popup"} className="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="submit" disabled={!validate()} className="btn btn-primary">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {/*///////////// BUY PRODUCT MODAL ///////////////////*/}
         </IonContent>
     );
 };

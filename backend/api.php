@@ -1,6 +1,9 @@
-
-
 <?php
+require_once 'stripe-php/init.php';
+
+$stripeSecretKey = "sk_test_51ME77cSIFtW1VSPuJqLQWVmK1vmdptG6j457wJlQv98NeRnB2eAdwkbQYWwlNfVIrtuRbNFPZsbKyafCQwdZuT1300SgcSS7AB";
+\Stripe\Stripe::setApiKey($stripeSecretKey);
+
 // Set appropriate headers for CORS (Cross-Origin Resource Sharing)
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
@@ -115,12 +118,40 @@ function deleteProduct($id) {
 }
 
 // Function to handle file upload
-function uploadFile() {
-    // Implement the file upload logic here and handle any errors
-    // You can use $_FILES["file"] to access the uploaded file information
-    // Example: move_uploaded_file($_FILES["file"]["tmp_name"], "uploads/" . $_FILES["file"]["name"]);
-    // After successful upload, you can store the file information in the database or perform any other actions.
-    // Send a response back to the client based on the upload status.
+function getStripeIntend($id) {
+    $pdo = connectToDatabase();
+    $token = rand(100,100000);
+    $sql = "UPDATE product SET token = :token WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->bindParam(":id", $id);
+    $stmt->bindParam(":token", $token);
+
+    if ($stmt->execute()) {
+        $sql = "select price FROM product WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(":id", $id);
+        $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        try {
+            // Create a PaymentIntent to charge the customer
+            $paymentIntent = \Stripe\PaymentIntent::create([
+                'automatic_payment_methods' => ["enabled" =>true],
+                'amount' => $product['price'], // Replace with the actual amount to charge (in cents)
+                'currency' => 'usd', // Replace with the desired currency code
+                'confirmation_method' => 'manual', // Adjust based on your requirements
+                'confirm' => true,
+            ]);
+
+            // Return the client secret to the frontend
+            sendResponse(200, ["clientSecret" => $paymentIntent->client_secret]);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            // Handle Stripe API errors
+            sendResponse(500, ["error" => "Failed to delete user"]);
+        }
+    } else {
+        sendResponse(500, ["error" => "Failed to delete user"]);
+    }
 }
 
 // Check the request method
@@ -136,6 +167,10 @@ if ($method === "GET") {
         insertProduct($_POST);
     }elseif ($data["endpoint"] === "login") {
         loginUser($data);
+    }elseif ($data["endpoint"] === "getintend") {
+        getStripeIntend($data["id"]);
+    }elseif ($data["endpoint"] === "publishkey") {
+        sendResponse(200, ["publishableKey" => 'pk_test_51ME77cSIFtW1VSPuewmIrcC2SSgHZi0ad2OuqicbcRiVpBRkRyVByCFEaIyb067eFhQL0GXaWVakkkZt5TuLFo6J005HlqBOck']);
     }
 } elseif ($method === "DELETE") {
     // Assuming the user ID is passed in the query string as "?id=USER_ID"
