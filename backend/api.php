@@ -61,6 +61,9 @@ function loginUser($data) {
         sendResponse(200, ["status" => 0]);
     }
 }
+function insertBuyProductAndSendEmail($data) {
+
+}
 function insertProduct($data) {
     // Validate the data (you can add more validation as needed)
     if (empty($data["name"]) || empty($data["description"]) || empty($data["price"]) || empty($data["url"]) || empty($_FILES["file"])) {
@@ -81,8 +84,14 @@ function insertProduct($data) {
     $description = $data["description"];
     $price = $data["price"];
     $url  = $data["url"];
+    $monthPrice  = $data["month_price"];
+    $yearPrice  = $data["year_price"];
+    $otherLink  = $data["other_link"];
+    $show_paid_button  = $data["show_paid_button"];
+    $show_free_button  = $data["show_free_button"];
+    $show_download_button  = $data["show_download_button"];
 
-    $sql = "INSERT INTO product (name, description, price, url, file_name) VALUES (:name, :description, :price, :url, :file_name)";
+    $sql = "INSERT INTO product (name, description, price,month_price,year_price, url,other_link, file_name,show_paid_button,show_free_button,show_download_button) VALUES (:name, :description, :price, :month_price,:year_price, :url,:other_link, :file_name,:show_paid_button,:show_free_button,:show_download_button)";
     $stmt = $pdo->prepare($sql);
 
     $stmt->bindParam(":name", $name);
@@ -90,6 +99,12 @@ function insertProduct($data) {
     $stmt->bindParam(":price", $price);
     $stmt->bindParam(":url", $url);
     $stmt->bindParam(":file_name", $fileName);
+    $stmt->bindParam(":month_price", $monthPrice);
+    $stmt->bindParam(":year_price", $yearPrice);
+    $stmt->bindParam(":other_link", $otherLink);
+    $stmt->bindParam(":show_paid_button", $show_paid_button);
+    $stmt->bindParam(":show_free_button", $show_free_button);
+    $stmt->bindParam(":show_download_button", $show_download_button);
 
     if ($stmt->execute()) {
         sendResponse(201, ["message" => "Product inserted successfully"]);
@@ -128,11 +143,18 @@ function getStripeIntend($id) {
         $sql = "select * FROM product WHERE id = ".$id;
         $stmt = $pdo->query($sql);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
-
+        $price = 0;
+        if($product['subscription'] == 'monthly'){
+            $price = $product['month_price'];
+        }elseif($product['subscription'] == 'yearly'){
+            $price = $product['year_price'];
+        }else{
+            $price = $product['price'];
+        }
         try {
             $stripe = new \Stripe\StripeClient('sk_test_51ME77cSIFtW1VSPuJqLQWVmK1vmdptG6j457wJlQv98NeRnB2eAdwkbQYWwlNfVIrtuRbNFPZsbKyafCQwdZuT1300SgcSS7AB');
             $paymentIntent = $stripe->paymentIntents->create([
-                'amount' => $product['price'],
+                'amount' => $price,
                 'currency' => 'usd',
                 'payment_method_types' => ['card'],
             ]);
@@ -151,7 +173,26 @@ function getStripeIntend($id) {
 $method = $_SERVER["REQUEST_METHOD"];
 
 if ($method === "GET") {
-    getProducts();
+    if (isset($_GET["file_name"])) {
+        $file_path = 'uploads/'.$_GET["file_name"];
+        $file_name = $_GET["file_name"];
+
+        if (file_exists($file_path)) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream'); // Set the appropriate content type
+            header('Content-Disposition: attachment; filename='.$file_name);
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($file_path));
+            readfile($file_path);
+            exit;
+        }else{
+            echo 'File not found';
+        }
+    } else {
+        getProducts();
+    }
 } elseif ($method === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
 
@@ -164,6 +205,8 @@ if ($method === "GET") {
         getStripeIntend($data["id"]);
     }elseif ($data["endpoint"] === "publishkey") {
         sendResponse(200, ["publishableKey" => 'pk_test_51ME77cSIFtW1VSPuewmIrcC2SSgHZi0ad2OuqicbcRiVpBRkRyVByCFEaIyb067eFhQL0GXaWVakkkZt5TuLFo6J005HlqBOck']);
+    }elseif ($data["endpoint"] === "success_buy") {
+        insertBuyProductAndSendEmail($_POST);
     }
 } elseif ($method === "DELETE") {
     // Assuming the user ID is passed in the query string as "?id=USER_ID"

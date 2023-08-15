@@ -46,7 +46,7 @@ a{
 
 h1,
 h2 {
-  font-family: 'Dancing Script', cursive;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .heading_container {
@@ -161,13 +161,18 @@ a:focus {
   padding-left: 25px;
 }
 
-.navbar-brand {
-  font-family: 'Dancing Script', cursive;
+.navbar-brand span.yellow{
+  color:#edc153;
 }
+.navbar-brand span.sub{
+   font-size: 20px;
+  display: block;
+}
+
 
 .navbar-brand span {
   font-weight: bold;
-  font-size: 32px;
+  font-size: 29px;
   color: #ffffff;
 }
 
@@ -356,9 +361,11 @@ a:focus {
 }
 
 .slider_section .detail-box h1 {
-  font-size: 3.5rem;
+  font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 15px;
+  text-decoration: underline;
+  line-height: 2.5rem;
 }
 
 .slider_section .detail-box p {
@@ -449,13 +456,13 @@ a:focus {
 }
 
 .offer_section .box .detail-box h5 {
-  font-family: 'Dancing Script', cursive;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 24px;
   margin: 0;
 }
 
 .offer_section .box .detail-box h6 {
-  font-family: 'Dancing Script', cursive;
+  font-family: Arial, Helvetica, sans-serif;
   margin: 10px 0;
 }
 
@@ -553,6 +560,7 @@ a:focus {
 
 .food_section .box .detail-box {
   padding: 25px;
+  height: 227px;
 }
 
 .food_section .box .detail-box h5 {
@@ -561,6 +569,11 @@ a:focus {
 
 .food_section .box .detail-box p {
   font-size: 15px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .food_section .box .detail-box h6 {
@@ -574,6 +587,9 @@ a:focus {
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
+  position: absolute;
+  bottom: 15px;
+  width: 87%;
 }
 
 .food_section .box .options a {
@@ -651,7 +667,7 @@ a:focus {
 
 .about_section .img-box img {
   width: 100%;
-  max-width: 445px;
+  max-width: 296px;
   position: relative;
   z-index: 2;
 }
@@ -659,7 +675,26 @@ a:focus {
 .about_section .detail-box p {
   margin-top: 15px;
 }
-
+.book_section .form_container input[type="checkbox"].form-control {
+  height: 19px!important;
+}
+.book_section .form_container input[type="file"].form-control {
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  font-size: 13px;
+}
+@media (max-width: 767px){
+  .book_section .form_container .form-control{
+    height: 38px!important;
+    padding-left: 10px!important;
+    margin: 0px;
+    font-size: 13px;
+  }
+}
+.about_section .detail-box, .book_section .form_container {
+  margin-bottom: 0px!important;
+}
 .about_section .detail-box a {
   display: inline-block;
   padding: 10px 45px;
@@ -928,7 +963,7 @@ a:focus {
 .footer_section .footer-logo {
   font-weight: 600;
   margin-bottom: 20px;
-  font-family: 'Dancing Script', cursive;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .footer_section p {

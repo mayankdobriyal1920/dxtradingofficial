@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">dx-official-trading</string>
+    <string name="title_activity_main">dx-official-trading</string>
+    <string name="package_name">app.dxofficialtrading.com</string>
+    <string name="custom_url_scheme">app.dxofficialtrading.com</string>
+</resources>

@@ -2,7 +2,7 @@ import React,{ useState } from "react";
 import { PaymentElement } from "@stripe/react-stripe-js";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 
-export default function CheckoutFormComponent() {
+export default function CheckoutFormComponent({id,email,subscription}) {
     const stripe = useStripe();
     const elements = useElements();
 
@@ -24,7 +24,7 @@ export default function CheckoutFormComponent() {
             elements,
             confirmParams: {
                 // Make sure to change this to your payment completion page
-                return_url: `${window.location.origin}/dashboard/home`,
+                return_url: `${window.location.origin}/home/${id}/${email}/${subscription}`,
             },
         });
 

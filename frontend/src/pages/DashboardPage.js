@@ -8,9 +8,15 @@ const DashboardPage = () =>{
     const [editModal,setEditModal] = useState({});
     const [name,setName] = useState('');
     const [url,setUrl] = useState('');
+    const [telegramUrl,setTelegramUrl] = useState('');
     const [description,setDescription] = useState('');
     const [file, setFile] = useState(null);
-    const [price,setPrice] = useState(0);
+    const [price,setPrice] = useState();
+    const [monthlyPrice,setMonthlyPrice] = useState();
+    const [yearlyPrice,setYearlyPrice] = useState();
+    const [showPriceButton,setShowPriceButton] = useState(1);
+    const [showFreeButton,setShowFreeButton] = useState(1);
+    const [showDirectDownloadButton,setShowDirectDownloadButton] = useState(1);
     const [loadingStatus,setLoadingStatus] = useState(false);
 
 
@@ -20,6 +26,9 @@ const DashboardPage = () =>{
             setDescription(editModal?.description);
             setUrl(editModal?.url);
             setPrice(editModal?.price);
+            setMonthlyPrice(editModal?.month_price);
+            setYearlyPrice(editModal?.year_price);
+            setTelegramUrl(editModal?.other_link);
         }
     },[editModal])
 
@@ -58,8 +67,6 @@ const DashboardPage = () =>{
             return false;
         }else if(!description?.trim()?.length){
             return false;
-        }else if(price === 0){
-            return false;
         }else if(!url?.trim()?.trim()) {
             return false;
         }else if(!file) {
@@ -77,7 +84,14 @@ const DashboardPage = () =>{
             formData.append("description", description);
             formData.append("url", url);
             formData.append("price", price);
+            formData.append("month_price", monthlyPrice);
+            formData.append("year_price", yearlyPrice);
+            formData.append("other_link", telegramUrl);
+            formData.append("price", price);
             formData.append("file", file);
+            formData.append("show_paid_button", showPriceButton);
+            formData.append("show_free_button", showFreeButton);
+            formData.append("show_download_button", showDirectDownloadButton);
             formData.append("endpoint", 'insert');
 
             try {
@@ -117,7 +131,8 @@ const DashboardPage = () =>{
                         <nav className="navbar navbar-expand-lg custom_nav-container">
                             <Link to={"/home"} className="navbar-brand">
                                 <span>
-                                  Dx official
+                                  <span className={"yellow"}>DX</span> OFFICIAL
+                                  <span className={"sub"}>TRADING</span>
                                 </span>
                             </Link>
                             <button className="navbar-toggler" type="button" data-toggle="collapse"
@@ -176,7 +191,13 @@ const DashboardPage = () =>{
                                                 </p>
                                                 <div className="options">
                                                     <h6>
-                                                        ${product?.price}
+                                                        Monthly ${product?.month_price}
+                                                    </h6>
+                                                    <h6>
+                                                        Yearly ${product?.year_price}
+                                                    </h6>
+                                                    <h6>
+                                                        Lifetime ${product?.price}
                                                     </h6>
                                                     <a onClick={()=>deleteProductAlert(product?.id)}><i className={"fa fa-trash"}/></a>
                                                 </div>
@@ -194,57 +215,111 @@ const DashboardPage = () =>{
                 <div style={{display:'block'}} className="modal-backdrop fade show"></div>
                 <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                     <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">Add product</h5>
-                            <button type="button" className="btn-close" onClick={()=>resetProductForm()} data-dismiss="modal" aria-label="Close">
-                                <i className={"fa fa-times"}/>
-                            </button>
-                        </div>
                         <form onSubmit={addProductDetail}>
                             <div className="modal-body">
                                 <section className="book_section">
                                     <div className="container">
                                         <div className="form_container">
-                                                <div>
+                                                <div className={"row"}>
+                                                <div className={"col-12"}>
+                                                    <label>Name</label>
                                                     <input type="name"
                                                            className="form-control"
-                                                           placeholder={"Enter product name"}
+                                                           placeholder={"Enter name"}
                                                            value={name}
                                                            onChange={(e)=>setName(e.target.value)}/>
                                                 </div>
-                                                <div>
-                                                    <input type="text"
-                                                           className="form-control"
-                                                           placeholder={"Enter product youtube url"}
-                                                           value={url}
-                                                           onChange={(e)=>setUrl(e.target.value)}
-                                                    />
-                                                </div>
-                                                <div>
+                                                    <div className={"col-6"}>
+                                                        <label>Youtube Url</label>
+                                                        <input type="text"
+                                                               className="form-control"
+                                                               placeholder={"Enter youtube url"}
+                                                               value={url}
+                                                               onChange={(e)=>setUrl(e.target.value)}
+                                                        />
+                                                    </div>
+                                                    <div className={"col-6"}>
+                                                        <label>Telegram Url</label>
+                                                        <input type="text"
+                                                               className="form-control"
+                                                               placeholder={"Enter youtube url"}
+                                                               value={telegramUrl}
+                                                               onChange={(e)=>setTelegramUrl(e.target.value)}
+                                                        />
+                                                    </div>
+                                                <div className={"col-12"}>
+                                                    <label>Description</label>
                                                     <textarea
-                                                           cols={2}
+                                                           cols={3}
                                                            className="form-control"
-                                                           placeholder={"Enter product description"}
+                                                           placeholder={"description"}
                                                            value={description}
                                                            onChange={(e)=>setDescription(e.target.value)}
                                                     />
                                                 </div>
-                                                <div>
-                                                    <input type="number"
-                                                           className="form-control"
-                                                           min={0}
-                                                           placeholder={"Enter product price"}
-                                                           value={price}
-                                                           onChange={(e)=>setPrice(Number(e.target.value))}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <input type="file"
-                                                           className="form-control"
-                                                           placeholder={"Select product file price"}
-                                                           onChange={(e)=>handleFileChange(e)}
-                                                          />
-                                                </div>
+                                            <div className={"col-4"}>
+                                                <label>Monthly</label>
+                                                <input type="number"
+                                                       className="form-control"
+                                                       min={0}
+                                                       placeholder={"price"}
+                                                       value={monthlyPrice}
+                                                       onChange={(e)=>setMonthlyPrice(Number(e.target.value))}
+                                                />
+                                            </div>
+                                            <div className={"col-4"}>
+                                                <label>Yearly</label>
+                                                <input type="number"
+                                                       className="form-control"
+                                                       min={0}
+                                                       placeholder={"price"}
+                                                       value={yearlyPrice}
+                                                       onChange={(e)=>setYearlyPrice(Number(e.target.value))}
+                                                />
+                                            </div>
+                                            <div className={"col-4"}>
+                                                <label>Lifetime</label>
+                                                <input type="number"
+                                                       className="form-control"
+                                                       min={0}
+                                                       placeholder={"price"}
+                                                       value={price}
+                                                       onChange={(e)=>setPrice(Number(e.target.value))}
+                                                />
+                                            </div>
+                                            <div className={"col-12"}>
+                                                <label>Select software file</label>
+                                                <input type="file"
+                                                       className="form-control"
+                                                       placeholder={"Select software file"}
+                                                       onChange={(e)=>handleFileChange(e)}
+                                                      />
+                                            </div>
+                                            <div className={"col-4"}>
+                                                <label>Paid Button</label>
+                                                <input type="checkbox"
+                                                       className="form-control"
+                                                       checked={!!showPriceButton}
+                                                       onChange={(e)=>setShowPriceButton(showPriceButton ? 0 : 1)}
+                                                />
+                                            </div>
+                                            <div className={"col-4"}>
+                                                <label>Free Button</label>
+                                                <input type="checkbox"
+                                                       className="form-control"
+                                                       checked={!!showFreeButton}
+                                                       onChange={(e)=>setShowFreeButton(showFreeButton ? 0 : 1)}
+                                                />
+                                            </div>
+                                            <div className={"col-4"}>
+                                                <label>Download Button</label>
+                                                <input type="checkbox"
+                                                       className="form-control"
+                                                       checked={!!showDirectDownloadButton}
+                                                       onChange={(e)=>setShowDirectDownloadButton(showDirectDownloadButton ? 0 : 1)}
+                                                />
+                                            </div>
+                                        </div>
                                         </div>
                                     </div>
                                 </section>

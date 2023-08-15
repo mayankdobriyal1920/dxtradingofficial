@@ -32,7 +32,7 @@ body {
 
 h1,
 h2 {
-  font-family: 'Dancing Script', cursive;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .heading_container {
@@ -148,7 +148,7 @@ a:focus {
 }
 
 .navbar-brand {
-  font-family: 'Dancing Script', cursive;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .navbar-brand span {
@@ -342,7 +342,7 @@ a:focus {
 }
 
 .slider_section .detail-box h1 {
-  font-size: 3.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
   margin-bottom: 15px;
 }
@@ -435,13 +435,13 @@ a:focus {
 }
 
 .offer_section .box .detail-box h5 {
-  font-family: 'Dancing Script', cursive;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 24px;
   margin: 0;
 }
 
 .offer_section .box .detail-box h6 {
-  font-family: 'Dancing Script', cursive;
+  font-family: Arial, Helvetica, sans-serif;
   margin: 10px 0;
 }
 
@@ -914,7 +914,7 @@ a:focus {
 .footer_section .footer-logo {
   font-weight: 600;
   margin-bottom: 20px;
-  font-family: 'Dancing Script', cursive;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .footer_section p {

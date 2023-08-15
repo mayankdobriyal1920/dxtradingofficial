@@ -64,6 +64,7 @@ const App=() => {
       <IonReactRouter>
         <IonRouterOutlet>
           <Route path="/home" exact={true} component={Home} />
+          <Route path="/home/:id/:email/:subscription" exact={true} component={Home} />
           <Route path="/dashboard" component={DashboardEntryPage} />
           <Redirect exact from="/" to="/home" />
           <Route render={() => <Redirect to="/home" />} />

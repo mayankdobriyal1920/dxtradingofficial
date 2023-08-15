@@ -3,7 +3,7 @@ import {Elements} from '@stripe/react-stripe-js';
 import CheckoutFormComponent from "./CheckoutFormComponent";
 import { loadStripe } from "@stripe/stripe-js";
 const stripePromise = loadStripe('pk_test_51ME77cSIFtW1VSPuewmIrcC2SSgHZi0ad2OuqicbcRiVpBRkRyVByCFEaIyb067eFhQL0GXaWVakkkZt5TuLFo6J005HlqBOck');
-export default function PaymentPopupComponent({id}){
+export default function PaymentPopupComponent({id,email,subscription}){
     const [clientSecret, setClientSecret] = useState("");
 
     useEffect(() => {
@@ -17,6 +17,7 @@ export default function PaymentPopupComponent({id}){
                         },
                         body: JSON.stringify({
                             id,
+                            subscription,
                             endpoint: 'getintend',
                         }),
                     });
@@ -36,7 +37,7 @@ export default function PaymentPopupComponent({id}){
         <>
             {clientSecret && stripePromise && (
                 <Elements stripe={stripePromise} options={{ clientSecret }}>
-                    <CheckoutFormComponent/>
+                    <CheckoutFormComponent id={id} email={email} subscription={subscription}/>
                 </Elements>
             )}
         </>
